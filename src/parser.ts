@@ -1,10 +1,22 @@
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
 import { parse, isValid, isSaturday, isPast } from 'date-fns';
+import {Gender, ParseResult, ParseVolunteers, Position, ResultsSummary, Summary, VolunteersSummary} from "./interfaces";
+import {
+    SELECTOR_POSITION,
+    SELECTOR_FINISHES,
+    SELECTOR_ACHIEVEMENT,
+    SELECTOR_FINISHTIME,
+    SELECTOR_GENDER_POSITION,
+    SELECTOR_VOLUNTEERS,
+    SELECTOR_NAME,
+    SELECTOR_RESULT_TABLE,
+    SELECTOR_VOLUNTEERS_TABLE, URL_5VERST_RESULTS
+} from './constants';
 
 
-function parsePositionInGenderGroup(text) {
-    const result = { position: null, gender: null };
+function parsePositionInGenderGroup(text: string): Position {
+    const result = { position: 0, gender: Gender.Male };
     const match = text.match(/(\d+)-[а-я]+ из \d+ [а-я]+/i);
 
     if (match) {
@@ -12,46 +24,48 @@ function parsePositionInGenderGroup(text) {
 
         // Determine gender based on the presence of specific keywords
         if (/женщин/i.test(text)) {
-            result.gender = 'female';
+            result.gender = Gender.Female;
         } else if (/мужчин/i.test(text)) {
-            result.gender = 'male';
+            result.gender = Gender.Male;
         }
     }
 
     return result;
 }
 
-// Define processResults function here
-const processResults = (data) => {
-    const $ = cheerio.load(data);
-    const results = [];
 
-    $('#results-table_runner tbody tr').each((index, element) => {
-        const position = $(element).find('td.table_gray__row_position div.table_gray__cell').text().trim();
-        const nameSurname = $(element).find('td.table_gray__row_name a').text().trim();
-        let finishes = 0;
-        if($(element).find('td.table_gray__row_name div.user-stat div span').length > 0) {
-            finishes = $(element).find('td.table_gray__row_name div.user-stat div span').first().text().trim().match(/\d+/)[0];
+const processResults = (data: string) => {
+    const $ = cheerio.load(data);
+    const results: ParseResult[] = [];
+
+    $(SELECTOR_RESULT_TABLE).each((index, element) => {
+        const position: number = parseInt($(element).find(SELECTOR_POSITION).text().trim(), 10);
+        const nameSurname: string = $(element).find(SELECTOR_NAME).text().trim();
+        let finishes: number = 0;
+        if($(element).find(SELECTOR_FINISHES).length > 0) {
+            const selector = $(element).find(SELECTOR_FINISHES).first().text().trim().match(/\d+/);
+            finishes = parseInt(selector ? selector[0] : '', 10) || 0;
         }
         let volunteering = 0;
-        if($(element).find('td.table_gray__row_name div.user-stat div span.volunteer').length > 0) {
-            volunteering = $(element).find('td.table_gray__row_name div.user-stat div span.volunteer').text().trim().match(/\d+/)[0];
+        if($(element).find(SELECTOR_VOLUNTEERS).length > 0) {
+            const selector = $(element).find(SELECTOR_VOLUNTEERS).text().trim().match(/\d+/);
+            volunteering = parseInt(selector ? selector[0] : '', 10) || 0;
         }
-        const finishTime = $(element).find('td.table_gray__row div.cell-label_time div').last().text().trim();
-        let positionInGenderGroup = {};
-        if ($(element).find('td.table_gray__row_name div.user-stat div.tablet-stats div').length > 0) {
-            positionInGenderGroup = parsePositionInGenderGroup($(element).find('td.table_gray__row_name div.user-stat div.tablet-stats div').last().text().trim());
+        const finishTime = $(element).find(SELECTOR_FINISHTIME).last().text().trim();
+        let positionInGenderGroup: Position = { position: 0, gender: Gender.Male };
+        if ($(element).find(SELECTOR_GENDER_POSITION).length > 0) {
+            positionInGenderGroup = parsePositionInGenderGroup($(element).find(SELECTOR_GENDER_POSITION).last().text().trim());
         }
         let achievement = '';
-        if ($(element).find('td.table_gray__row div.cell-label_time div.table-achievments span[title]').attr('title')) {
-            achievement = $(element).find('td.table_gray__row div.cell-label_time div.table-achievments span[title]').attr('title');
+        if ($(element).find().attr('title')) {
+            achievement = $(element).find(SELECTOR_ACHIEVEMENT).attr('title') || '';
         }
 
         results.push({
             position,
             nameSurname,
-            finishes: parseInt(finishes, 10),
-            volunteering: parseInt(volunteering, 10),
+            finishes: finishes,
+            volunteering: volunteering,
             finishTime,
             positionInGenderGroup,
             achievement
@@ -61,7 +75,7 @@ const processResults = (data) => {
 };
 
 
-const volunteersSummary = (results) => {
+const volunteersSummary = (results: ParseVolunteers[]): VolunteersSummary => {
     return {
         totalVolunteers: results.length,
         jubileeVolunteering: results
@@ -80,8 +94,7 @@ const volunteersSummary = (results) => {
             .map(r => (`${r.name} - ${r.role}`)),
     }
 }
-// Define createSummary function here
-const createSummary = (results, date) => {
+const createSummary = (results: ParseResult[], date: string): ResultsSummary => {
     return {
         date,
         totalFinishers: results.length,
@@ -122,19 +135,20 @@ const createSummary = (results, date) => {
     };
 };
 
-async function fetchHtmlContent(url) {
+async function fetchHtmlContent(url: string): Promise<string> {
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return await response.text();
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching the page:', error);
+        return '';
     }
 }
 
-function parseAndValidateDate(dateStr) {
+function parseAndValidateDate(dateStr: string): string {
     if(!dateStr) {
         return 'latest';
     }
@@ -148,34 +162,32 @@ function parseAndValidateDate(dateStr) {
     }
 }
 
-function parseVolunteers(data) {
-    const $ = cheerio.load(data);
-    const volunteers = [];
 
-    $('#volunteers table.sortable tbody tr').each((index, element) => {
+function parseVolunteers(data: string): ParseVolunteers[] {
+    const $ = cheerio.load(data);
+    const volunteers: ParseVolunteers[] = [];
+
+    $(SELECTOR_VOLUNTEERS_TABLE).each((index, element) => {
         const name = $(element).find('td').first().find('a').text().trim();
         const volunteeringCountMatch = $(element).find('.user-stat .volunteer').text().trim().match(/\d+/) || $(element).find('.user-stat .volunteer-noruns').text().trim().match(/\d+/);
-        const volunteeringCount = volunteeringCountMatch ? parseInt(volunteeringCountMatch[0], 10) : undefined;
+        const volunteeringCount = volunteeringCountMatch ? parseInt(volunteeringCountMatch[0], 10) : 0;
         const role = $(element).find('td').last().text().trim();
         const achievementImgSrc = $(element).find('.results_icon img').attr('src');
-        let achievement;
-        if (achievementImgSrc) {
-            achievement = $(element).find('.results_icon img').attr('alt');
-        }
+        const achievement = achievementImgSrc ? $(element).find('.results_icon img').attr('alt') || '' : '';
 
         volunteers.push({
             name,
             volunteeringCount,
             role,
-            achievement: achievement || ''
+            achievement
         });
     });
 
     return mergeVolunteerRoles(volunteers);
 }
 
-function mergeVolunteerRoles(volunteers) {
-    const mergedVolunteers = [];
+function mergeVolunteerRoles(volunteers: ParseVolunteers[]): ParseVolunteers[] {
+    const mergedVolunteers: ParseVolunteers[] = [];
 
     volunteers.forEach(volunteer => {
         // Check if this volunteer is already in the mergedVolunteers array
@@ -197,15 +209,15 @@ function mergeVolunteerRoles(volunteers) {
 }
 
 
-export const parser5verst = async (message) => {
+export const parser5verst = async (message: string):Promise<Summary|null> => {
     let date = parseAndValidateDate(message); // Get the date from the query string
-    const url = `https://5verst.ru/park850letiyamoskvy/results/${date}/`;
+    const url = `${URL_5VERST_RESULTS}/${date}/`;
 
     try {
-        const data = await fetchHtmlContent(url);
-        const results = processResults(data); // Assume this function processes the HTML/data from the URL and extracts results
-        const volunteers = parseVolunteers(data);
-        // Use the createSummary function defined earlier
+        const data: string = await fetchHtmlContent(url);
+        const results: ParseResult[] = processResults(data); // Assume this function processes the HTML/data from the URL and extracts results
+        const volunteers: ParseVolunteers[] = parseVolunteers(data);
+
         return {
             summary: createSummary(results, date),
             volunteers: volunteersSummary(volunteers)

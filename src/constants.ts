@@ -1,0 +1,10 @@
+export const SELECTOR_RESULT_TABLE = '#results-table_runner tbody tr';
+export const SELECTOR_VOLUNTEERS_TABLE = '#volunteers table.sortable tbody tr';
+export const SELECTOR_POSITION = 'td.table_gray__row_position div.table_gray__cell';
+export const SELECTOR_NAME = 'td.table_gray__row_name a';
+export const SELECTOR_FINISHES = 'td.table_gray__row_name div.user-stat div span';
+export const SELECTOR_VOLUNTEERS = 'td.table_gray__row_name div.user-stat div span.volunteer';
+export const SELECTOR_FINISHTIME = 'td.table_gray__row div.cell-label_time div';
+export const SELECTOR_GENDER_POSITION = 'td.table_gray__row_name div.user-stat div.tablet-stats div';
+export const SELECTOR_ACHIEVEMENT = 'td.table_gray__row div.cell-label_time div.table-achievments span[title]';
+export const URL_5VERST_RESULTS = 'https://5verst.ru/park850letiyamoskvy/results'

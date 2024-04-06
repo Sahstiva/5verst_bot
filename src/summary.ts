@@ -1,6 +1,7 @@
 import {format, startOfWeek, subDays} from "date-fns";
+import {Summary} from "./interfaces";
 
-export function formatSummary(data) {
+export function formatSummary(data: Summary): string {
     if (data.summary.date === 'latest') {
         data.summary.date = getLastSaturdayDate();
     }
@@ -28,12 +29,12 @@ export function formatSummary(data) {
     \n${data.volunteers.volunteeringList.join('\n')}`;
 }
 
-function getLastSaturdayDate() {
+function getLastSaturdayDate(): string {
     const now = new Date();
     const lastSaturday = startOfWeek(now, { weekStartsOn: 0 });
     return format(subDays(lastSaturday, 1), 'dd.MM.yyyy');
 }
 
-function formatTime(timeStr) {
+function formatTime(timeStr: string): string {
     return timeStr.replace(/^00:/,'');
 }
