@@ -1,27 +1,28 @@
 import {handler} from './index.js';
+import 'dotenv/config';
 
 const message = {
-    update_id: 418454937,
+    update_id: process.env.update_id,
     message: {
       message_id: 57,
       from: {
-        id: 126685195,
+        id: process.env.tg_id,
         is_bot: false,
-        first_name: 'Alexander',
-        last_name: 'Vitshas',
-        username: 'Sahstiva',
+        first_name: process.env.first_name,
+        last_name: process.env.last_name,
+        username: process.env.username,
         language_code: 'en',
         is_premium: true
       },
       chat: {
-        id: 126685195,
-        first_name: 'Alexander',
-        last_name: 'Vitshas',
-        username: 'Sahstiva',
+        id: process.env.tg_id,
+          first_name: process.env.first_name,
+          last_name: process.env.last_name,
+          username: process.env.username,
         type: 'private'
       },
       date: 1710142622,
-      text: '02.03.2024'
+      text: 'latest'
     }
 };
 handler(message)
