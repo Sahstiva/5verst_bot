@@ -1,5 +1,5 @@
 import {format, startOfWeek, subDays} from "date-fns";
-import {Summary} from "./interfaces";
+import {Summary} from './interfaces.js';
 
 export function formatSummary(data: Summary): string {
     if (data.summary.date === 'latest') {

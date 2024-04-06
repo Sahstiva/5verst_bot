@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
 import { parse, isValid, isSaturday, isPast } from 'date-fns';
-import {Gender, ParseResult, ParseVolunteers, Position, ResultsSummary, Summary, VolunteersSummary} from "./interfaces";
+import {Gender, ParseResult, ParseVolunteers, Position, ResultsSummary, Summary, VolunteersSummary} from './interfaces.js';
 import {
     SELECTOR_POSITION,
     SELECTOR_FINISHES,
@@ -12,7 +12,7 @@ import {
     SELECTOR_NAME,
     SELECTOR_RESULT_TABLE,
     SELECTOR_VOLUNTEERS_TABLE, URL_5VERST_RESULTS
-} from './constants';
+} from './constants.js';
 
 
 function parsePositionInGenderGroup(text: string): Position {

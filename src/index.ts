@@ -1,9 +1,9 @@
 import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { parser5verst }  from './src/parser';
-import { formatSummary } from './src/summary';
+import { parser5verst }  from './parser.js';
+import { formatSummary } from './summary.js';
 import 'dotenv/config';
-import {BotMessage, handlerResponse} from "./src/interfaces";
+import {BotMessage, handlerResponse} from './interfaces.js';
 import {Update} from "@telegraf/types";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -21,8 +21,9 @@ bot.on(message('text'), async (ctx) => {
         if (data) {
             const summary = formatSummary(data);
             await ctx.reply(summary);
+        } else {
+            await ctx.reply('Error fetching data from 5 Verst');
         }
-        await ctx.reply('Error fetching data from 5 Verst');
     } catch (error) {
         console.error('Failed to fetch summary:', error);
         await ctx.reply('Sorry, there was an error fetching the summary. Please try again later.');
