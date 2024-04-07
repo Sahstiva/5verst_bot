@@ -29,7 +29,7 @@ export function formatSummary(data: Summary): string {
     \n${data.volunteers.volunteeringList.join('\n')}`;
 }
 
-function getLastSaturdayDate(): string {
+export function getLastSaturdayDate(): string {
     const now = new Date();
     const lastSaturday = startOfWeek(now, { weekStartsOn: 0 });
     return format(subDays(lastSaturday, 1), 'dd.MM.yyyy');

@@ -91,3 +91,23 @@ export interface handlerResponse {
     statusCode: number,
     body: string
 }
+export interface NrmsResponse {
+    errorCode: number,
+    errorMessage: string
+}
+export interface NrmsLoginResponse extends NrmsResponse {
+    result: {
+        token: string
+    }
+}
+export interface NrmsResultItem {
+    position: number,
+    athlete_id: number,
+    finish_time: string,
+    full_name: string
+}
+export interface NrmsResultsResponse {
+    result: {
+        results: NrmsResultItem[]
+    }
+}
