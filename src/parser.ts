@@ -57,7 +57,7 @@ const processResults = (data: string) => {
             positionInGenderGroup = parsePositionInGenderGroup($(element).find(SELECTOR_GENDER_POSITION).last().text().trim());
         }
         let achievement = '';
-        if ($(element).find().attr('title')) {
+        if ($(element).find(SELECTOR_ACHIEVEMENT).attr('title')) {
             achievement = $(element).find(SELECTOR_ACHIEVEMENT).attr('title') || '';
         }
 
