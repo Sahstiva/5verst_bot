@@ -135,3 +135,5 @@ dist
 
 # No compiled javascript
 /*.js
+
+*.xlsx
