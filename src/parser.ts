@@ -126,10 +126,10 @@ const createSummary = (results: ParseResult[], date: string): ResultsSummary => 
         })),
         achievementsCount: {
             personalBest: results.filter(r => r.achievement.includes('Личный рекорд')).length,
-            firstParkFinish: results.filter(r => r.achievement.includes('Первый финиш на Парк 850-летия Москвы')).length,
+            firstParkFinish: results.filter(r => r.achievement.includes('Первый финиш на Марьино')).length,
             first5kFinish: results.filter(r => r.achievement.includes('Первый финиш на 5 вёрст')).length,
         },
-        newcomersPark: results.filter(r => r.achievement.includes('Первый финиш на Парк 850-летия Москвы')).map(r => r.nameSurname),
+        newcomersPark: results.filter(r => r.achievement.includes('Первый финиш на Марьино')).map(r => r.nameSurname),
         newcomers5k: results.filter(r => r.achievement.includes('Первый финиш на 5 вёрст')).map(r => r.nameSurname),
         personalRecordBreakers: results.filter(r => r.achievement.includes('Личный рекорд!')).map(r => r.nameSurname),
     };

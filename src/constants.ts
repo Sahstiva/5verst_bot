@@ -1,5 +1,5 @@
 export const SELECTOR_RESULT_TABLE = '#results-table_runner tbody tr';
-export const SELECTOR_VOLUNTEERS_TABLE = '#volunteers table.sortable tbody tr';
+export const SELECTOR_VOLUNTEERS_TABLE = 'table.results-table tbody tr';
 export const SELECTOR_POSITION = 'td.table_gray__row_position div.table_gray__cell';
 export const SELECTOR_NAME = 'td.table_gray__row_name a';
 export const SELECTOR_FINISHES = 'td.table_gray__row_name div.user-stat div span';

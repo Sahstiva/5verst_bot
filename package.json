@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "tsc && node xlsgenerate.js"
+    "test": "tsc && node xlsgenerate.js",
+    "local": "tsc && node run_local.js"
   },
   "keywords": [],
   "author": "",

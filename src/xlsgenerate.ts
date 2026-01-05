@@ -90,11 +90,11 @@ const createXLS = (results: NrmsResultItem[]) => {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Probeg');
-    XLSX.writeFile(workbook, 'probeg.xlsx');
+    XLSX.writeFile(workbook, '/Users/sahstiva/Documents/MyRunO/probeg030126.xlsx');
 }
 
 (async () => {
-    const response = await getResults();
+    const response = await getResults('03.01.2026');
     if (response?.result.results) {
         createXLS(response.result.results);
     }
